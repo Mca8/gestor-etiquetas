@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+  <link rel="stylesheet" href="https://use.typekit.net/kgd4tjg.css">
+  <title>Gestor de Etiquetas Energéticas</title>
+</head>
+
+<body>
+  <main class="container">
+    <header class="header">
+      <div>
+        <p class="eyebrow">Backoffice JSON</p>
+        <h1>Etiquetas Energéticas</h1>
+
+        <p class="subtitle">
+          Introduz o ID e escolhe a classe energética.
+        </p>
+      </div>
+    </header>
+    
+
+    <section class="form-card">
+      <form id="productForm">
+        <div class="form-grid">
+          <label>
+            <span>ID do produto (ID SGE)</span>
+
+            <input
+              id="productId"
+              type="text"
+              inputmode="numeric"
+              autocomplete="off"
+              placeholder="Ex.: 62535"
+              required
+            >
+          </label>
+
+          <label>
+            <span>Classe energética</span>
+
+            <select id="energyClass" required>
+              <option value="a" selected>A</option>
+              <option value="b">B</option>
+              <option value="c">C</option>
+              <option value="d">D</option>
+              <option value="e">E</option>
+              <option value="f">F</option>
+              <option value="g">G</option>
+            </select>
+          </label>
+        </div>
+
+        <p id="formError" class="form-error"></p>
+
+        <button class="button button-primary" type="submit">
+          Adicionar ID Produto
+        </button>
+      </form>
+    </section>
+
+    <section class="toolbar">
+      <div>
+        <strong id="productCount">0 produtos</strong>
+
+        <span class="saved-message">
+          Guardado neste navegador
+        </span>
+      </div>
+
+      <div class="toolbar-actions">
+        <button id="importButton" class="button" type="button">
+          Importar JSON
+        </button>
+
+        <button id="copyButton" class="button" type="button">
+          Copiar JSON
+        </button>
+
+        <button id="exportButton" class="button" type="button">
+          Exportar JSON
+        </button>
+
+        <button
+          id="clearButton"
+          class="button button-danger"
+          type="button"
+        >
+          Limpar tudo
+        </button>
+
+        <input
+          id="fileInput"
+          type="file"
+          accept=".json,application/json"
+          hidden
+        >
+      </div>
+    </section>
+
+    <section id="productsList" class="products-list"></section>
+
+    <section id="emptyState" class="empty-state">
+      <h2>Ainda não existem produtos</h2>
+
+      <p>
+        Introduz um ID e seleciona a classe energética.
+      </p>
+    </section>
+<section class="image-section">
+  <div>
+    <h2>Gerar imagens das etiquetas</h2>
+
+    <p>
+      Carrega uma etiqueta e seleciona os produtos que devem usar essa imagem.
+    </p>
+  </div>
+
+  <label class="image-upload">
+    <span>Imagem da etiqueta</span>
+
+    <input
+      id="labelImageInput"
+      type="file"
+      accept="image/png,image/jpeg,image/webp"
+    >
+  </label>
+
+  <div id="imagePreviewContainer" class="image-preview" hidden>
+    <img
+      id="imagePreview"
+      src=""
+      alt="Pré-visualização da etiqueta"
+    >
+
+    <div>
+      <strong id="selectedImageName"></strong>
+      <span id="selectedProductsCount">0 produtos selecionados</span>
+    </div>
+  </div>
+
+  <div class="products-selection-header">
+    <strong>Selecionar produtos</strong>
+
+    <div>
+      <button
+        id="selectAllProductsButton"
+        class="text-button"
+        type="button"
+      >
+        Selecionar todos
+      </button>
+
+      <button
+        id="clearProductSelectionButton"
+        class="text-button"
+        type="button"
+      >
+        Limpar seleção
+      </button>
+    </div>
+  </div>
+
+  <div
+    id="imageProductsSelection"
+    class="image-products-selection"
+  ></div>
+
+  <button
+    id="generateImagesButton"
+    class="button button-primary"
+    type="button"
+    disabled
+  >
+    Gerar imagens selecionadas
+  </button>
+</section>
+    <section class="json-section">
+      <div class="json-header">
+        <h2>JSON gerado</h2>
+
+        <button id="copyPreviewButton" class="button" type="button">
+          Copiar
+        </button>
+      </div>
+
+      <pre id="jsonPreview">[]</pre>
+    </section>
+  </main>
+
+  <div id="toast" class="toast" role="status"></div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
