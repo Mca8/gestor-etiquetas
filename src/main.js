@@ -1,3 +1,204 @@
+$.getJSON('/Documents/class-energeticas/equipamentos.json')
+.done(function(data) {
+
+    let idProduct_single_page = $('.ms-webpart-zone')
+        .children('.ms-webpartzone-cell')
+        .find('.ms-WPBody')
+        .children()
+        .children('input:nth-child(5)')
+        .attr('value');
+
+    let idProductClass = '';
+    let this_eqip = '';
+
+    console.log(idProduct_single_page);
+
+    if(idProduct_single_page == undefined){
+
+        // MONTRA
+        console.log("Info Class Energetica Montra");
+
+        setTimeout(function () {
+
+            function addMontraClassEnergONLoad(){
+
+                $('#equipmentsDiv .new-content-product').each(function(){
+
+                    idProductClass = $(this)
+                        .find('.item-specs')
+                        .find('a')
+                        .attr('data-autotest');
+
+                    this_eqip = $(this);
+
+                    if($(this_eqip).find('.item-specs').hasClass('energ_default')){
+
+                        if($(this_eqip).find('.item-specs').hasClass('energ_yes')){
+
+                            // Já tem classe energética
+
+                        } else {
+
+                            jQuery.each(data, function(i, subArray) {
+
+                                if(subArray.id_product == idProductClass){
+
+                                    $(this_eqip)
+                                        .find('.efe_energ.default-item')
+                                        .remove();
+
+                                    if($(window).width() < 767){
+
+                                        $(this_eqip)
+                                            .find('.item-specs')
+                                            .children('.item-specs__properties')
+                                            .children('.properties-rating')
+                                            .children('.item-price__wrap__new__mobile')
+                                            .prepend(
+                                                '<div class="efe_energ_montra '+subArray.class_e+'">' +
+                                                    '<img src="https://lojaonline.nos.pt/Documents/class-energeticas/'+subArray.class_e+'.png" alt="">' +
+                                                '</div>'
+                                            );
+
+                                    } else {
+
+                                        $(this_eqip)
+                                            .find('.item-specs')
+                                            .append(
+                                                '<div class="efe_energ_montra '+subArray.class_e+'">' +
+                                                    '<img src="https://lojaonline.nos.pt/Documents/class-energeticas/'+subArray.class_e+'.png" alt="">' +
+                                                '</div>'
+                                            );
+
+                                    }
+
+                                    $(this_eqip)
+                                        .find('.item-specs')
+                                        .addClass('energ_yes');
+                                }
+
+                            });
+
+                        }
+
+                    } else {
+
+                        $(this_eqip)
+                            .find('.item-specs')
+                            .addClass('energ_default');
+
+                        if($(window).width() < 767){
+
+                            $(this_eqip)
+                                .find('.item-specs')
+                                .children('.item-specs__properties')
+                                .children('.properties-rating')
+                                .children('.item-price__wrap__new__mobile')
+                                .prepend(
+                                    '<div class="efe_energ default-item" style="width:100%;height:40px;"></div>'
+                                );
+
+                        } else {
+
+                            $(this_eqip)
+                                .find('.item-specs')
+                                .append(
+                                    '<div class="efe_energ default-item" style="width:100%;height:40px;"></div>'
+                                );
+
+                        }
+
+                    }
+
+                });
+
+            }
+
+            addMontraClassEnergONLoad();
+
+            window.addEventListener('scroll', function handler() {
+
+                addMontraClassEnergONLoad();
+
+                if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+
+                    console.log('Chegou ao final da página!');
+
+                    window.removeEventListener('scroll', handler);
+                }
+
+            });
+
+        }, 1000);
+
+    } else {
+
+        // PAGINA PRODUTO
+        console.log("Info Class Energetica");
+
+        setTimeout(function () {
+
+            let idProduct_single_page_FINAL =
+                'card_equipment_id_' + idProduct_single_page;
+
+            $('.main-content').append(
+                '<div id="popup1" class="overlay_popup">' +
+                    '<div class="popup_en">' +
+                        '<button type="button" class="close btn-style" href="#">&times;</button>' +
+                        '<div class="content">' +
+                            '<img src="" alt="" style="width: 100%; height: auto;">' +
+                        '</div>' +
+                    '</div>' +
+                '</div>'
+            );
+
+            jQuery.each(data, function(i, subArray) {
+
+                if(subArray.id_product == idProduct_single_page_FINAL){
+
+                    $('.content-price-product')
+                        .find('.container-price-detail')
+                        .children('.price-detail')
+                        .prepend(
+                            '<div class="efe_energ_btn">' +
+                                '<div class="box">' +
+                                    '<button type="button" class="popup-class-energ btn-style">' +
+                                        '<img ' +
+                                            'src="https://lojaonline.nos.pt/Documents/class-energeticas/'+subArray.class_e+'.png" ' +
+                                            'data-img-popup="https://lojaonline.nos.pt/Documents/class-energeticas/classe-energetica-popup/'+subArray.img_popup+'.png">' +
+                                    '</button>' +
+                                '</div>' +
+                            '</div>'
+                        );
+
+                }
+
+            });
+
+            $('.popup-class-energ').click(function(){
+
+                $('.overlay_popup').addClass('show');
+
+                let img_source = $(this)
+                    .find('img')
+                    .attr('data-img-popup');
+
+                $('.popup_en')
+                    .find('.content img')
+                    .attr('src', img_source);
+
+            });
+
+            $('.close').click(function(){
+
+                $('.overlay_popup').removeClass('show');
+
+            });
+
+        }, 1000);
+
+    }
+
 import "./style.css";
 import JSZip from "jszip";
 
@@ -660,7 +861,7 @@ function exportJson() {
   const link = document.createElement("a");
 
   link.href = url;
-  link.download = "dados.json";
+  link.download = "data-labels.json";
 
   document.body.appendChild(link);
 
