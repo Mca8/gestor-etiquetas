@@ -522,6 +522,90 @@ pre {
 .header-nav a:hover {
     color: #dcdcdc;
 }
+.product-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+.product-number {
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.energy-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 42px;
+  height: 42px;
+
+  border-radius: 10px;
+
+  color: #ffffff;
+
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.energy-a {
+  background: #008f4c;
+}
+
+.energy-b {
+  background: #50a832;
+}
+
+.energy-c {
+  background: #a8c530;
+}
+
+.energy-d {
+  background: #f2ce28;
+  color: #1c2430;
+}
+
+.energy-e {
+  background: #f39c12;
+}
+
+.energy-f {
+  background: #e65c2f;
+}
+
+.energy-g {
+  background: #c62828;
+}
+
+.product-card dl {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin: 0 0 22px;
+}
+
+.product-card dl div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.product-card dt {
+  color: #8b8b8b;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.product-card dd {
+  margin: 0;
+  font-family: Consolas, monospace;
+  font-size: 14px;
+  word-break: break-word;
+}
 
 @media (max-width: 720px) {
   .header-top {
