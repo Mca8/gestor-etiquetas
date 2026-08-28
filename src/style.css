@@ -122,6 +122,10 @@ select:focus {
   font-weight: 700;
 }
 
+.product-actions button {
+    font-size: 14px;
+}
+
 .button:hover {
   background: #f2f4f7;
 }
@@ -170,13 +174,13 @@ select:focus {
 
 .products-list {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 14px;
 }
 
 @media (max-width: 1400px) {
   .products-list {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
