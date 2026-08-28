@@ -249,7 +249,7 @@ function renderProducts() {
 
   elements.emptyState.hidden = true;
 
-  products.forEach((product) => {
+  products.forEach((product, index) => {
     const id = getRawId(product);
 
     const energyClass =
@@ -266,11 +266,11 @@ function renderProducts() {
     card.innerHTML = `
       <div class="product-card-header">
 
-        <strong>
-          ID ${escapeHtml(id)}
+        <strong class="product-number">
+          Produto ${index + 1}
         </strong>
 
-        <span class="energy-badge">
+        <span class="energy-badge energy-${energyClass}">
           ${escapeHtml(
             energyClass.toUpperCase()
           )}
@@ -282,28 +282,19 @@ function renderProducts() {
 
         <div>
           <dt>ID PRODUCT</dt>
-
-          <dd>
-            ${escapeHtml(id)}
-          </dd>
+          <dd>${escapeHtml(id)}</dd>
         </div>
 
         <div>
           <dt>CLASS E</dt>
-
-          <dd>
-            ${escapeHtml(
-              energyClass.toUpperCase()
-            )}
-          </dd>
+          <dd>${escapeHtml(
+            energyClass.toUpperCase()
+          )}</dd>
         </div>
 
         <div>
           <dt>IMG POPUP</dt>
-
-          <dd>
-            ${escapeHtml(popupId)}
-          </dd>
+          <dd>${escapeHtml(popupId)}</dd>
         </div>
 
       </dl>
