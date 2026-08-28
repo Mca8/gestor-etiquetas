@@ -1,208 +1,17 @@
-$.getJSON('/Documents/class-energeticas/equipamentos.json')
-.done(function(data) {
-
-    let idProduct_single_page = $('.ms-webpart-zone')
-        .children('.ms-webpartzone-cell')
-        .find('.ms-WPBody')
-        .children()
-        .children('input:nth-child(5)')
-        .attr('value');
-
-    let idProductClass = '';
-    let this_eqip = '';
-
-    console.log(idProduct_single_page);
-
-    if(idProduct_single_page == undefined){
-
-        // MONTRA
-        console.log("Info Class Energetica Montra");
-
-        setTimeout(function () {
-
-            function addMontraClassEnergONLoad(){
-
-                $('#equipmentsDiv .new-content-product').each(function(){
-
-                    idProductClass = $(this)
-                        .find('.item-specs')
-                        .find('a')
-                        .attr('data-autotest');
-
-                    this_eqip = $(this);
-
-                    if($(this_eqip).find('.item-specs').hasClass('energ_default')){
-
-                        if($(this_eqip).find('.item-specs').hasClass('energ_yes')){
-
-                            // Já tem classe energética
-
-                        } else {
-
-                            jQuery.each(data, function(i, subArray) {
-
-                                if(subArray.id_product == idProductClass){
-
-                                    $(this_eqip)
-                                        .find('.efe_energ.default-item')
-                                        .remove();
-
-                                    if($(window).width() < 767){
-
-                                        $(this_eqip)
-                                            .find('.item-specs')
-                                            .children('.item-specs__properties')
-                                            .children('.properties-rating')
-                                            .children('.item-price__wrap__new__mobile')
-                                            .prepend(
-                                                '<div class="efe_energ_montra '+subArray.class_e+'">' +
-                                                    '<img src="https://lojaonline.nos.pt/Documents/class-energeticas/'+subArray.class_e+'.png" alt="">' +
-                                                '</div>'
-                                            );
-
-                                    } else {
-
-                                        $(this_eqip)
-                                            .find('.item-specs')
-                                            .append(
-                                                '<div class="efe_energ_montra '+subArray.class_e+'">' +
-                                                    '<img src="https://lojaonline.nos.pt/Documents/class-energeticas/'+subArray.class_e+'.png" alt="">' +
-                                                '</div>'
-                                            );
-
-                                    }
-
-                                    $(this_eqip)
-                                        .find('.item-specs')
-                                        .addClass('energ_yes');
-                                }
-
-                            });
-
-                        }
-
-                    } else {
-
-                        $(this_eqip)
-                            .find('.item-specs')
-                            .addClass('energ_default');
-
-                        if($(window).width() < 767){
-
-                            $(this_eqip)
-                                .find('.item-specs')
-                                .children('.item-specs__properties')
-                                .children('.properties-rating')
-                                .children('.item-price__wrap__new__mobile')
-                                .prepend(
-                                    '<div class="efe_energ default-item" style="width:100%;height:40px;"></div>'
-                                );
-
-                        } else {
-
-                            $(this_eqip)
-                                .find('.item-specs')
-                                .append(
-                                    '<div class="efe_energ default-item" style="width:100%;height:40px;"></div>'
-                                );
-
-                        }
-
-                    }
-
-                });
-
-            }
-
-            addMontraClassEnergONLoad();
-
-            window.addEventListener('scroll', function handler() {
-
-                addMontraClassEnergONLoad();
-
-                if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
-
-                    console.log('Chegou ao final da página!');
-
-                    window.removeEventListener('scroll', handler);
-                }
-
-            });
-
-        }, 1000);
-
-    } else {
-
-        // PAGINA PRODUTO
-        console.log("Info Class Energetica");
-
-        setTimeout(function () {
-
-            let idProduct_single_page_FINAL =
-                'card_equipment_id_' + idProduct_single_page;
-
-            $('.main-content').append(
-                '<div id="popup1" class="overlay_popup">' +
-                    '<div class="popup_en">' +
-                        '<button type="button" class="close btn-style" href="#">&times;</button>' +
-                        '<div class="content">' +
-                            '<img src="" alt="" style="width: 100%; height: auto;">' +
-                        '</div>' +
-                    '</div>' +
-                '</div>'
-            );
-
-            jQuery.each(data, function(i, subArray) {
-
-                if(subArray.id_product == idProduct_single_page_FINAL){
-
-                    $('.content-price-product')
-                        .find('.container-price-detail')
-                        .children('.price-detail')
-                        .prepend(
-                            '<div class="efe_energ_btn">' +
-                                '<div class="box">' +
-                                    '<button type="button" class="popup-class-energ btn-style">' +
-                                        '<img ' +
-                                            'src="https://lojaonline.nos.pt/Documents/class-energeticas/'+subArray.class_e+'.png" ' +
-                                            'data-img-popup="https://lojaonline.nos.pt/Documents/class-energeticas/classe-energetica-popup/'+subArray.img_popup+'.png">' +
-                                    '</button>' +
-                                '</div>' +
-                            '</div>'
-                        );
-
-                }
-
-            });
-
-            $('.popup-class-energ').click(function(){
-
-                $('.overlay_popup').addClass('show');
-
-                let img_source = $(this)
-                    .find('img')
-                    .attr('data-img-popup');
-
-                $('.popup_en')
-                    .find('.content img')
-                    .attr('src', img_source);
-
-            });
-
-            $('.close').click(function(){
-
-                $('.overlay_popup').removeClass('show');
-
-            });
-
-        }, 1000);
-
-    }
-
 import "./style.css";
 import JSZip from "jszip";
 
-const STORAGE_KEY = "gestor-produtos-json";
+
+/* =========================================================
+   CONFIGURAÇÃO
+========================================================= */
+
+const STORAGE_KEY = "energy-products";
+
+
+/* =========================================================
+   ELEMENTOS HTML
+========================================================= */
 
 const elements = {
   productForm: document.querySelector("#productForm"),
@@ -217,48 +26,98 @@ const elements = {
 
   importButton: document.querySelector("#importButton"),
   fileInput: document.querySelector("#fileInput"),
+
   copyButton: document.querySelector("#copyButton"),
-  copyPreviewButton: document.querySelector("#copyPreviewButton"),
+  copyPreviewButton: document.querySelector(
+    "#copyPreviewButton"
+  ),
+
   exportButton: document.querySelector("#exportButton"),
   clearButton: document.querySelector("#clearButton"),
-  labelImageInput: document.querySelector("#labelImageInput"),
 
-  imagePreviewContainer: document.querySelector("#imagePreviewContainer"),
-  imagePreview: document.querySelector("#imagePreview"),
-  selectedImageName: document.querySelector("#selectedImageName"),
-  selectedProductsCount: document.querySelector("#selectedProductsCount"),
-  imageProductsSelection: document.querySelector("#imageProductsSelection"),
-  selectAllProductsButton: document.querySelector("#selectAllProductsButton"),
-  clearProductSelectionButton: document.querySelector("#clearProductSelectionButton"),
-  generateImagesButton: document.querySelector("#generateImagesButton"),
+  /* GERADOR DE IMAGENS */
+
+  labelImageInput: document.querySelector(
+    "#labelImageInput"
+  ),
+
+  imagePreviewContainer: document.querySelector(
+    "#imagePreviewContainer"
+  ),
+
+  imagePreview: document.querySelector(
+    "#imagePreview"
+  ),
+
+  selectedImageName: document.querySelector(
+    "#selectedImageName"
+  ),
+
+  selectedProductsCount: document.querySelector(
+    "#selectedProductsCount"
+  ),
+
+  imageProductsSelection: document.querySelector(
+    "#imageProductsSelection"
+  ),
+
+  selectAllProductsButton: document.querySelector(
+    "#selectAllProductsButton"
+  ),
+
+  clearProductSelectionButton: document.querySelector(
+    "#clearProductSelectionButton"
+  ),
+
+  generateImagesButton: document.querySelector(
+    "#generateImagesButton"
+  ),
 
   toast: document.querySelector("#toast")
 };
+
+
+/* =========================================================
+   DADOS
+========================================================= */
 
 let products = loadProducts();
 
 let selectedLabelImage = null;
 let selectedImagePreviewUrl = null;
+
 let selectedProductIds = new Set();
+
+
+/* =========================================================
+   LOCAL STORAGE
+========================================================= */
 
 function loadProducts() {
   try {
-    const savedProducts = localStorage.getItem(STORAGE_KEY);
+    const storedProducts =
+      localStorage.getItem(STORAGE_KEY);
 
-    if (!savedProducts) {
+    if (!storedProducts) {
       return [];
     }
 
-    const parsedProducts = JSON.parse(savedProducts);
+    const parsedProducts =
+      JSON.parse(storedProducts);
 
     return Array.isArray(parsedProducts)
       ? parsedProducts
       : [];
   } catch (error) {
-    console.error("Erro ao carregar produtos:", error);
+    console.error(
+      "Erro ao carregar produtos:",
+      error
+    );
+
     return [];
   }
 }
+
 
 function saveProducts() {
   localStorage.setItem(
@@ -267,19 +126,35 @@ function saveProducts() {
   );
 }
 
-function normalizeId(value) {
-  return String(value)
-    .trim()
-    .replace(/\D/g, "");
-}
+
+/* =========================================================
+   CRIAR PRODUTO
+========================================================= */
 
 function createProduct(id, energyClass) {
+  const cleanId = String(id).trim();
+
+  const cleanEnergyClass =
+    String(energyClass)
+      .trim()
+      .toLowerCase();
+
   return {
-    id_product: `card_equipment_id_${id}`,
-    class_e: `class-energ-${energyClass.toLowerCase()}`,
-    img_popup: `card_equipment_id_${id}-popup`
+    id_product:
+      `card_equipment_id_${cleanId}`,
+
+    class_e:
+      `class-energ-${cleanEnergyClass}`,
+
+    img_popup:
+      `card_equipment_id_${cleanId}-popup`
   };
 }
+
+
+/* =========================================================
+   OBTER ID SIMPLES
+========================================================= */
 
 function getRawId(product) {
   return product.id_product.replace(
@@ -288,6 +163,11 @@ function getRawId(product) {
   );
 }
 
+
+/* =========================================================
+   OBTER CLASSE ENERGÉTICA SIMPLES
+========================================================= */
+
 function getEnergyClass(product) {
   return product.class_e.replace(
     "class-energ-",
@@ -295,54 +175,57 @@ function getEnergyClass(product) {
   );
 }
 
-function productExists(id) {
-  const completeId = `card_equipment_id_${id}`;
 
-  return products.some((product) => {
-    return product.id_product === completeId;
-  });
+/* =========================================================
+   ESCAPAR HTML
+========================================================= */
+
+function escapeHtml(value) {
+  const div = document.createElement("div");
+
+  div.textContent = String(value);
+
+  return div.innerHTML;
 }
 
-function handleSubmit(event) {
-  event.preventDefault();
 
-  elements.formError.textContent = "";
+/* =========================================================
+   JSON FORMATADO
+========================================================= */
 
-  const id = normalizeId(elements.productId.value);
-  const energyClass = elements.energyClass.value;
-
-  if (!id) {
-    elements.formError.textContent =
-      "Introduz um ID válido.";
-
-    elements.productId.focus();
-    return;
+function getPrettyJson() {
+  if (products.length === 1) {
+    return JSON.stringify(
+      products[0],
+      null,
+      2
+    );
   }
 
-  if (productExists(id)) {
-    elements.formError.textContent =
-      `O produto com o ID ${id} já existe.`;
-
-    elements.productId.focus();
-    return;
-  }
-
-  const product = createProduct(id, energyClass);
-
-  products.push(product);
-
-  saveProducts();
-  render();
-
-  elements.productForm.reset();
-
-  // Define B novamente como opção predefinida.
-  elements.energyClass.value = "a";
-
-  elements.productId.focus();
-
-  showToast("Produto adicionado.");
+  return JSON.stringify(
+    products,
+    null,
+    2
+  );
 }
+
+
+/* =========================================================
+   JSON MINIFICADO
+========================================================= */
+
+function getMinifiedJson() {
+  if (products.length === 1) {
+    return JSON.stringify(products[0]);
+  }
+
+  return JSON.stringify(products);
+}
+
+
+/* =========================================================
+   RENDER PRINCIPAL
+========================================================= */
 
 function render() {
   renderProducts();
@@ -351,90 +234,756 @@ function render() {
   renderImageProductsSelection();
 }
 
+
+/* =========================================================
+   RENDER PRODUTOS
+========================================================= */
+
 function renderProducts() {
   elements.productsList.innerHTML = "";
 
-  elements.emptyState.hidden = products.length > 0;
+  if (products.length === 0) {
+    elements.emptyState.hidden = false;
+    return;
+  }
 
-  products.forEach((product, index) => {
+  elements.emptyState.hidden = true;
+
+  products.forEach((product) => {
     const id = getRawId(product);
-    const energyClass = getEnergyClass(product);
-    const popupId = `${id}-popup`;
 
-    const article = document.createElement("article");
-    article.className = "product-card";
+    const energyClass =
+      getEnergyClass(product);
 
-    article.innerHTML = `
-      <div class="product-information">
-        <div class="product-heading">
-          <span class="product-id">
-            ID ${escapeHtml(id)}
-          </span>
+    const popupId =
+      `${id}-popup`;
 
-          <span class="energy-class energy-${energyClass}">
-            ${energyClass.toUpperCase()}
-          </span>
-        </div>
+    const card =
+      document.createElement("article");
 
-        <dl>
-          <div>
-            <dt>ID Equipamento</dt>
-            <dd>${escapeHtml(id)}</dd>
-          </div>
+    card.className = "product-card";
 
-          <div>
-            <dt>Class Energética</dt>
-            <dd>${escapeHtml(energyClass.toUpperCase())}</dd>
-          </div>
+    card.innerHTML = `
+      <div class="product-card-header">
 
-          <div>
-            <dt>Image Popup</dt>
-            <dd>${escapeHtml(popupId)}</dd>
-          </div>
-        </dl>
+        <strong>
+          ID ${escapeHtml(id)}
+        </strong>
+
+        <span class="energy-badge">
+          ${escapeHtml(
+            energyClass.toUpperCase()
+          )}
+        </span>
+
       </div>
 
+      <dl>
+
+        <div>
+          <dt>ID PRODUCT</dt>
+
+          <dd>
+            ${escapeHtml(id)}
+          </dd>
+        </div>
+
+        <div>
+          <dt>CLASS E</dt>
+
+          <dd>
+            ${escapeHtml(
+              energyClass.toUpperCase()
+            )}
+          </dd>
+        </div>
+
+        <div>
+          <dt>IMG POPUP</dt>
+
+          <dd>
+            ${escapeHtml(popupId)}
+          </dd>
+        </div>
+
+      </dl>
+
       <div class="product-actions">
+
         <button
-          class="button"
           type="button"
-          data-action="edit"
-          data-index="${index}"
+          class="button edit-product"
+          data-id="${escapeHtml(id)}"
         >
           Editar
         </button>
 
         <button
-          class="button button-danger"
           type="button"
-          data-action="delete"
-          data-index="${index}"
+          class="button button-danger delete-product"
+          data-id="${escapeHtml(id)}"
         >
           Eliminar
         </button>
+
       </div>
     `;
 
-    elements.productsList.appendChild(article);
+    elements.productsList.appendChild(card);
   });
 }
+
+
+/* =========================================================
+   RENDER JSON
+========================================================= */
 
 function renderJson() {
   elements.jsonPreview.textContent =
     getPrettyJson();
 }
 
+
+/* =========================================================
+   CONTADOR
+========================================================= */
+
 function renderCount() {
+  const count = products.length;
+
   elements.productCount.textContent =
-    `${products.length} ${
-      products.length === 1
+    `${count} ${
+      count === 1
         ? "produto"
         : "produtos"
     }`;
 }
 
+
+/* =========================================================
+   ADICIONAR PRODUTO
+========================================================= */
+
+function addProduct(event) {
+  event.preventDefault();
+
+  const id =
+    elements.productId.value.trim();
+
+  const energyClass =
+    elements.energyClass.value;
+
+  elements.formError.textContent = "";
+
+  if (!id) {
+    elements.formError.textContent =
+      "Introduz um ID.";
+
+    return;
+  }
+
+  if (!/^\d+$/.test(id)) {
+    elements.formError.textContent =
+      "O ID deve conter apenas números.";
+
+    return;
+  }
+
+  const fullId =
+    `card_equipment_id_${id}`;
+
+  const alreadyExists =
+    products.some(
+      (product) =>
+        product.id_product === fullId
+    );
+
+  if (alreadyExists) {
+    elements.formError.textContent =
+      "Este ID já existe.";
+
+    return;
+  }
+
+  products.push(
+    createProduct(
+      id,
+      energyClass
+    )
+  );
+
+  saveProducts();
+  render();
+
+  elements.productForm.reset();
+
+  /*
+   * Classe energética volta sempre para A.
+   */
+  elements.energyClass.value = "a";
+
+  elements.productId.focus();
+
+  showToast("Produto adicionado.");
+}
+
+
+/* =========================================================
+   EDITAR PRODUTO
+========================================================= */
+
+function editProduct(id) {
+  const fullId =
+    `card_equipment_id_${id}`;
+
+  const product =
+    products.find(
+      (item) =>
+        item.id_product === fullId
+    );
+
+  if (!product) {
+    return;
+  }
+
+  const currentClass =
+    getEnergyClass(product);
+
+  const newId = window.prompt(
+    "ID do produto:",
+    id
+  );
+
+  if (newId === null) {
+    return;
+  }
+
+  const cleanId =
+    newId.trim();
+
+  if (!/^\d+$/.test(cleanId)) {
+    window.alert(
+      "O ID deve conter apenas números."
+    );
+
+    return;
+  }
+
+  const newClass = window.prompt(
+    "Classe energética (A a G):",
+    currentClass.toUpperCase()
+  );
+
+  if (newClass === null) {
+    return;
+  }
+
+  const cleanClass =
+    newClass
+      .trim()
+      .toLowerCase();
+
+  if (!/^[a-g]$/.test(cleanClass)) {
+    window.alert(
+      "A classe energética deve estar entre A e G."
+    );
+
+    return;
+  }
+
+  const newFullId =
+    `card_equipment_id_${cleanId}`;
+
+  const duplicated =
+    products.some(
+      (item) =>
+        item.id_product === newFullId &&
+        item !== product
+    );
+
+  if (duplicated) {
+    window.alert(
+      "Já existe um produto com esse ID."
+    );
+
+    return;
+  }
+
+  const oldFullId =
+    product.id_product;
+
+  const updatedProduct =
+    createProduct(
+      cleanId,
+      cleanClass
+    );
+
+  Object.assign(
+    product,
+    updatedProduct
+  );
+
+  /*
+   * Se estava selecionado para geração
+   * de imagem, atualiza a seleção.
+   */
+
+  if (
+    selectedProductIds.has(oldFullId)
+  ) {
+    selectedProductIds.delete(
+      oldFullId
+    );
+
+    selectedProductIds.add(
+      updatedProduct.id_product
+    );
+  }
+
+  saveProducts();
+  render();
+
+  showToast("Produto atualizado.");
+}
+
+
+/* =========================================================
+   ELIMINAR PRODUTO
+========================================================= */
+
+function deleteProduct(id) {
+  const confirmed =
+    window.confirm(
+      `Eliminar o produto ${id}?`
+    );
+
+  if (!confirmed) {
+    return;
+  }
+
+  const fullId =
+    `card_equipment_id_${id}`;
+
+  products =
+    products.filter(
+      (product) =>
+        product.id_product !== fullId
+    );
+
+  selectedProductIds.delete(
+    fullId
+  );
+
+  saveProducts();
+  render();
+
+  showToast("Produto eliminado.");
+}
+
+
+/* =========================================================
+   EVENTOS DOS CARTÕES
+========================================================= */
+
+function handleProductActions(event) {
+  const editButton =
+    event.target.closest(
+      ".edit-product"
+    );
+
+  if (editButton) {
+    editProduct(
+      editButton.dataset.id
+    );
+
+    return;
+  }
+
+  const deleteButton =
+    event.target.closest(
+      ".delete-product"
+    );
+
+  if (deleteButton) {
+    deleteProduct(
+      deleteButton.dataset.id
+    );
+  }
+}
+
+
+/* =========================================================
+   LIMPAR TODOS
+========================================================= */
+
+function clearProducts() {
+  if (products.length === 0) {
+    return;
+  }
+
+  const confirmed =
+    window.confirm(
+      "Queres eliminar todos os produtos?"
+    );
+
+  if (!confirmed) {
+    return;
+  }
+
+  products = [];
+
+  selectedProductIds.clear();
+
+  saveProducts();
+  render();
+
+  showToast(
+    "Todos os produtos foram eliminados."
+  );
+}
+
+
+/* =========================================================
+   COPIAR JSON MINIFICADO
+========================================================= */
+
+async function copyJson() {
+  const json =
+    getMinifiedJson();
+
+  try {
+    await navigator.clipboard.writeText(
+      json
+    );
+
+    showToast(
+      "JSON copiado."
+    );
+  } catch (error) {
+    console.error(
+      "Erro ao copiar JSON:",
+      error
+    );
+
+    window.alert(
+      "Não foi possível copiar o JSON."
+    );
+  }
+}
+
+
+/* =========================================================
+   COPIAR PREVIEW FORMATADO
+========================================================= */
+
+async function copyPrettyJson() {
+  const json =
+    getPrettyJson();
+
+  try {
+    await navigator.clipboard.writeText(
+      json
+    );
+
+    showToast(
+      "JSON formatado copiado."
+    );
+  } catch (error) {
+    console.error(
+      "Erro ao copiar JSON:",
+      error
+    );
+  }
+}
+
+
+/* =========================================================
+   EXPORTAR COMO TXT
+
+   O conteúdo continua a ser JSON válido.
+   Apenas a extensão passa a ser .txt.
+========================================================= */
+
+function exportJson() {
+  const json =
+    getMinifiedJson();
+
+  const blob = new Blob(
+    [json],
+    {
+      type:
+        "text/plain;charset=utf-8"
+    }
+  );
+
+  const url =
+    URL.createObjectURL(blob);
+
+  const link =
+    document.createElement("a");
+
+  link.href = url;
+
+  /*
+   * ALTERA AQUI CASO QUEIRAS
+   * OUTRO NOME PARA O FICHEIRO.
+   */
+  link.download =
+    "equipamentos.txt";
+
+  document.body.appendChild(link);
+
+  link.click();
+  link.remove();
+
+  URL.revokeObjectURL(url);
+
+  showToast(
+    "Ficheiro equipamentos.txt exportado."
+  );
+}
+
+
+/* =========================================================
+   VALIDAÇÃO DO JSON IMPORTADO
+========================================================= */
+
+function isValidEnergyClass(value) {
+  return /^class-energ-[a-g]$/i.test(
+    String(value ?? "").trim()
+  );
+}
+
+
+function extractIdFromProduct(value) {
+  const match =
+    String(value ?? "")
+      .trim()
+      .match(
+        /^card_equipment_id_(\d+)$/
+      );
+
+  return match
+    ? match[1]
+    : null;
+}
+
+
+function validateImportedProduct(
+  product
+) {
+  if (
+    !product ||
+    typeof product !== "object"
+  ) {
+    return {
+      valid: false,
+      message:
+        "Existe um registo inválido."
+    };
+  }
+
+  const id =
+    extractIdFromProduct(
+      product.id_product
+    );
+
+  if (!id) {
+    return {
+      valid: false,
+      message:
+        'O campo "id_product" deve ter o formato ' +
+        '"card_equipment_id_62535".'
+    };
+  }
+
+  if (
+    !isValidEnergyClass(
+      product.class_e
+    )
+  ) {
+    return {
+      valid: false,
+      message:
+        'O campo "class_e" deve estar entre ' +
+        '"class-energ-a" e "class-energ-g".'
+    };
+  }
+
+  const expectedPopup =
+    `card_equipment_id_${id}-popup`;
+
+  if (
+    product.img_popup !==
+    expectedPopup
+  ) {
+    return {
+      valid: false,
+      message:
+        `O img_popup do produto ${id} deveria ser ` +
+        `"${expectedPopup}".`
+    };
+  }
+
+  const energyClass =
+    product.class_e
+      .replace(
+        "class-energ-",
+        ""
+      )
+      .toLowerCase();
+
+  return {
+    valid: true,
+
+    product: createProduct(
+      id,
+      energyClass
+    )
+  };
+}
+
+
+/* =========================================================
+   IMPORTAR JSON / TXT
+
+   Permite importar tanto .json como .txt,
+   desde que o conteúdo seja JSON válido.
+========================================================= */
+
+function importJsonFile(file) {
+  if (!file) {
+    return;
+  }
+
+  const reader =
+    new FileReader();
+
+  reader.onload = () => {
+    try {
+      const parsedJson =
+        JSON.parse(
+          reader.result
+        );
+
+      const importedProducts =
+        Array.isArray(parsedJson)
+          ? parsedJson
+          : [parsedJson];
+
+      if (
+        importedProducts.length === 0
+      ) {
+        throw new Error(
+          "O ficheiro não contém produtos."
+        );
+      }
+
+      const validatedProducts = [];
+
+      importedProducts.forEach(
+        (product, index) => {
+          const validation =
+            validateImportedProduct(
+              product
+            );
+
+          if (!validation.valid) {
+            throw new Error(
+              `Produto ${index + 1}: ` +
+              validation.message
+            );
+          }
+
+          validatedProducts.push(
+            validation.product
+          );
+        }
+      );
+
+      const importedIds =
+        validatedProducts.map(
+          (product) =>
+            product.id_product
+        );
+
+      if (
+        new Set(importedIds).size !==
+        importedIds.length
+      ) {
+        throw new Error(
+          "O ficheiro contém IDs repetidos."
+        );
+      }
+
+      const shouldReplace =
+        window.confirm(
+          "Queres substituir os produtos atuais " +
+          "pelos produtos do ficheiro importado?"
+        );
+
+      if (!shouldReplace) {
+        elements.fileInput.value =
+          "";
+
+        return;
+      }
+
+      products =
+        validatedProducts;
+
+      selectedProductIds.clear();
+
+      saveProducts();
+      render();
+
+      showToast(
+        `${products.length} ${
+          products.length === 1
+            ? "produto importado"
+            : "produtos importados"
+        }.`
+      );
+    } catch (error) {
+      window.alert(
+        "Não foi possível importar o ficheiro.\n\n" +
+        error.message
+      );
+    } finally {
+      elements.fileInput.value =
+        "";
+    }
+  };
+
+  reader.onerror = () => {
+    window.alert(
+      "Não foi possível ler o ficheiro."
+    );
+
+    elements.fileInput.value =
+      "";
+  };
+
+  reader.readAsText(
+    file,
+    "UTF-8"
+  );
+}
+
+
+/* =========================================================
+   LISTA DE PRODUTOS PARA AS IMAGENS
+========================================================= */
+
 function renderImageProductsSelection() {
-  elements.imageProductsSelection.innerHTML = "";
+  if (
+    !elements.imageProductsSelection
+  ) {
+    return;
+  }
+
+  elements.imageProductsSelection.innerHTML =
+    "";
 
   removeInvalidProductSelections();
 
@@ -446,52 +995,106 @@ function renderImageProductsSelection() {
     `;
 
     updateImageGenerator();
+
     return;
   }
 
   products.forEach((product) => {
-    const id = getRawId(product);
+    const id =
+      getRawId(product);
 
-    const label = document.createElement("label");
+    const energyClass =
+      getEnergyClass(product);
 
-    label.className = "product-selection-item";
+    const label =
+      document.createElement(
+        "label"
+      );
+
+    label.className =
+      "product-selection-item";
 
     label.innerHTML = `
       <input
         type="checkbox"
-        value="${escapeHtml(product.id_product)}"
-        ${selectedProductIds.has(product.id_product) ? "checked" : ""}
+        value="${escapeHtml(
+          product.id_product
+        )}"
+        ${
+          selectedProductIds.has(
+            product.id_product
+          )
+            ? "checked"
+            : ""
+        }
       >
 
       <span class="product-selection-info">
-        <strong>ID ${escapeHtml(id)}</strong>
+
+        <strong>
+          ID ${escapeHtml(id)}
+        </strong>
 
         <small>
-          ${escapeHtml(product.class_e)}
+          Classe ${escapeHtml(
+            energyClass.toUpperCase()
+          )}
         </small>
+
       </span>
     `;
 
-    elements.imageProductsSelection.appendChild(label);
+    elements.imageProductsSelection.appendChild(
+      label
+    );
   });
 
   updateImageGenerator();
 }
 
-function removeInvalidProductSelections() {
-  const existingIds = new Set(
-    products.map((product) => product.id_product)
-  );
 
-  selectedProductIds.forEach((idProduct) => {
-    if (!existingIds.has(idProduct)) {
-      selectedProductIds.delete(idProduct);
+/* =========================================================
+   LIMPAR IDs QUE JÁ NÃO EXISTEM
+========================================================= */
+
+function removeInvalidProductSelections() {
+  const existingIds =
+    new Set(
+      products.map(
+        (product) =>
+          product.id_product
+      )
+    );
+
+  selectedProductIds.forEach(
+    (idProduct) => {
+      if (
+        !existingIds.has(
+          idProduct
+        )
+      ) {
+        selectedProductIds.delete(
+          idProduct
+        );
+      }
     }
-  });
+  );
 }
 
+
+/* =========================================================
+   CONTADOR DOS PRODUTOS SELECIONADOS
+========================================================= */
+
 function updateSelectedProductsCount() {
-  const count = selectedProductIds.size;
+  if (
+    !elements.selectedProductsCount
+  ) {
+    return;
+  }
+
+  const count =
+    selectedProductIds.size;
 
   elements.selectedProductsCount.textContent =
     `${count} ${
@@ -501,23 +1104,54 @@ function updateSelectedProductsCount() {
     }`;
 }
 
+
+/* =========================================================
+   ESTADO DO BOTÃO GERAR IMAGENS
+========================================================= */
+
 function updateImageGenerator() {
+  updateSelectedProductsCount();
+
+  if (
+    !elements.generateImagesButton
+  ) {
+    return;
+  }
+
   elements.generateImagesButton.disabled =
     !selectedLabelImage ||
     selectedProductIds.size === 0;
-
-  updateSelectedProductsCount();
 }
 
-function handleLabelImageSelection(event) {
-  const file = event.target.files[0];
+
+/* =========================================================
+   SELECIONAR IMAGEM
+========================================================= */
+
+function handleLabelImageSelection(
+  event
+) {
+  const file =
+    event.target.files[0];
 
   selectedLabelImage = null;
-  elements.imagePreviewContainer.hidden = true;
 
-  if (selectedImagePreviewUrl) {
-    URL.revokeObjectURL(selectedImagePreviewUrl);
-    selectedImagePreviewUrl = null;
+  if (
+    elements.imagePreviewContainer
+  ) {
+    elements.imagePreviewContainer.hidden =
+      true;
+  }
+
+  if (
+    selectedImagePreviewUrl
+  ) {
+    URL.revokeObjectURL(
+      selectedImagePreviewUrl
+    );
+
+    selectedImagePreviewUrl =
+      null;
   }
 
   if (!file) {
@@ -531,18 +1165,28 @@ function handleLabelImageSelection(event) {
     "image/webp"
   ];
 
-  if (!allowedTypes.includes(file.type)) {
+  if (
+    !allowedTypes.includes(
+      file.type
+    )
+  ) {
     window.alert(
       "Seleciona uma imagem PNG, JPG, JPEG ou WEBP."
     );
 
-    elements.labelImageInput.value = "";
+    elements.labelImageInput.value =
+      "";
+
     updateImageGenerator();
+
     return;
   }
 
-  selectedLabelImage = file;
-  selectedImagePreviewUrl = URL.createObjectURL(file);
+  selectedLabelImage =
+    file;
+
+  selectedImagePreviewUrl =
+    URL.createObjectURL(file);
 
   elements.imagePreview.src =
     selectedImagePreviewUrl;
@@ -550,38 +1194,66 @@ function handleLabelImageSelection(event) {
   elements.selectedImageName.textContent =
     file.name;
 
-  elements.imagePreviewContainer.hidden = false;
+  elements.imagePreviewContainer.hidden =
+    false;
 
   updateImageGenerator();
 }
 
-function handleProductSelection(event) {
-  const checkbox = event.target.closest(
-    'input[type="checkbox"]'
-  );
+
+/* =========================================================
+   CHECKBOX DOS PRODUTOS
+========================================================= */
+
+function handleProductSelection(
+  event
+) {
+  const checkbox =
+    event.target.closest(
+      'input[type="checkbox"]'
+    );
 
   if (!checkbox) {
     return;
   }
 
-  const idProduct = checkbox.value;
+  const idProduct =
+    checkbox.value;
 
   if (checkbox.checked) {
-    selectedProductIds.add(idProduct);
+    selectedProductIds.add(
+      idProduct
+    );
   } else {
-    selectedProductIds.delete(idProduct);
+    selectedProductIds.delete(
+      idProduct
+    );
   }
 
   updateImageGenerator();
 }
 
+
+/* =========================================================
+   SELECIONAR TODOS
+========================================================= */
+
 function selectAllProducts() {
-  products.forEach((product) => {
-    selectedProductIds.add(product.id_product);
-  });
+  products.forEach(
+    (product) => {
+      selectedProductIds.add(
+        product.id_product
+      );
+    }
+  );
 
   renderImageProductsSelection();
 }
+
+
+/* =========================================================
+   LIMPAR SELEÇÃO
+========================================================= */
 
 function clearProductSelection() {
   selectedProductIds.clear();
@@ -589,8 +1261,16 @@ function clearProductSelection() {
   renderImageProductsSelection();
 }
 
-function getFileExtension(filename) {
-  const lastDotIndex = filename.lastIndexOf(".");
+
+/* =========================================================
+   EXTENSÃO DA IMAGEM
+========================================================= */
+
+function getFileExtension(
+  filename
+) {
+  const lastDotIndex =
+    filename.lastIndexOf(".");
 
   if (lastDotIndex === -1) {
     return "";
@@ -601,13 +1281,23 @@ function getFileExtension(filename) {
     .toLowerCase();
 }
 
+
+/* =========================================================
+   GERAR ZIP DAS IMAGENS
+========================================================= */
+
 async function generateImagesZip() {
   if (!selectedLabelImage) {
-    window.alert("Seleciona primeiro uma imagem.");
+    window.alert(
+      "Seleciona primeiro uma imagem."
+    );
+
     return;
   }
 
-  if (selectedProductIds.size === 0) {
+  if (
+    selectedProductIds.size === 0
+  ) {
     window.alert(
       "Seleciona pelo menos um produto."
     );
@@ -615,58 +1305,90 @@ async function generateImagesZip() {
     return;
   }
 
-  const selectedProducts = products.filter((product) => {
-    return selectedProductIds.has(product.id_product);
-  });
+  const selectedProducts =
+    products.filter(
+      (product) =>
+        selectedProductIds.has(
+          product.id_product
+        )
+    );
 
-  if (selectedProducts.length === 0) {
+  if (
+    selectedProducts.length === 0
+  ) {
     window.alert(
       "Os produtos selecionados já não existem."
     );
 
     selectedProductIds.clear();
+
     renderImageProductsSelection();
+
     return;
   }
 
   try {
-    elements.generateImagesButton.disabled = true;
+    elements.generateImagesButton.disabled =
+      true;
 
     elements.generateImagesButton.textContent =
       "A gerar imagens...";
 
-    const zip = new JSZip();
+    const zip =
+      new JSZip();
 
     const extension =
-      getFileExtension(selectedLabelImage.name) || ".png";
+      getFileExtension(
+        selectedLabelImage.name
+      ) || ".png";
 
     const imageContent =
       await selectedLabelImage.arrayBuffer();
 
-    selectedProducts.forEach((product) => {
-      const filename =
-        `${product.img_popup}${extension}`;
+    selectedProducts.forEach(
+      (product) => {
+        const filename =
+          `${product.img_popup}${extension}`;
 
-      zip.file(filename, imageContent);
-    });
+        zip.file(
+          filename,
+          imageContent
+        );
+      }
+    );
 
-    const zipContent = await zip.generateAsync({
-      type: "blob"
-    });
+    const zipContent =
+      await zip.generateAsync({
+        type: "blob"
+      });
 
     const downloadUrl =
-      URL.createObjectURL(zipContent);
+      URL.createObjectURL(
+        zipContent
+      );
 
-    const link = document.createElement("a");
+    const link =
+      document.createElement(
+        "a"
+      );
 
-    link.href = downloadUrl;
-    link.download = "etiquetas-selecionadas.zip";
+    link.href =
+      downloadUrl;
 
-    document.body.appendChild(link);
+    link.download =
+      "etiquetas-selecionadas.zip";
+
+    document.body.appendChild(
+      link
+    );
+
     link.click();
+
     link.remove();
 
-    URL.revokeObjectURL(downloadUrl);
+    URL.revokeObjectURL(
+      downloadUrl
+    );
 
     showToast(
       `${selectedProducts.length} ${
@@ -677,7 +1399,7 @@ async function generateImagesZip() {
     );
   } catch (error) {
     console.error(
-      "Erro ao gerar as imagens:",
+      "Erro ao gerar imagens:",
       error
     );
 
@@ -692,471 +1414,145 @@ async function generateImagesZip() {
   }
 }
 
-function editProduct(index) {
-  const product = products[index];
 
-  if (!product) {
-    return;
-  }
+/* =========================================================
+   TOAST
+========================================================= */
 
-  const currentId = getRawId(product);
-  const currentClass = getEnergyClass(product);
-
-  const newIdInput = window.prompt(
-    "ID do produto:",
-    currentId
-  );
-
-  if (newIdInput === null) {
-    return;
-  }
-
-  const newId = normalizeId(newIdInput);
-
-  if (!newId) {
-    window.alert("Introduz um ID válido.");
-    return;
-  }
-
-  const duplicatedId = products.some(
-    (existingProduct, existingIndex) => {
-      return (
-        existingIndex !== index &&
-        existingProduct.id_product ===
-          `card_equipment_id_${newId}`
-      );
-    }
-  );
-
-  if (duplicatedId) {
-    window.alert(
-      `O produto com o ID ${newId} já existe.`
-    );
-
-    return;
-  }
-
-  const newClassInput = window.prompt(
-    "Classe energética entre A e G:",
-    currentClass.toUpperCase()
-  );
-
-  if (newClassInput === null) {
-    return;
-  }
-
-  const newClass = newClassInput
-    .trim()
-    .toLowerCase();
-
-  const allowedClasses = [
-    "a",
-    "b",
-    "c",
-    "d",
-    "e",
-    "f",
-    "g"
-  ];
-
-  if (!allowedClasses.includes(newClass)) {
-    window.alert(
-      "A classe energética deve estar entre A e G."
-    );
-
-    return;
-  }
-
-  products[index] = createProduct(
-    newId,
-    newClass
-  );
-
-  saveProducts();
-  render();
-
-  showToast("Produto atualizado.");
-}
-
-function deleteProduct(index) {
-  const product = products[index];
-
-  if (!product) {
-    return;
-  }
-
-  const id = getRawId(product);
-
-  const shouldDelete = window.confirm(
-    `Eliminar o produto com o ID ${id}?`
-  );
-
-  if (!shouldDelete) {
-    return;
-  }
-
-  products.splice(index, 1);
-
-  saveProducts();
-  render();
-
-  showToast("Produto eliminado.");
-}
-
-function getPrettyJson() {
-  if (products.length === 1) {
-    return JSON.stringify(products[0], null, 2);
-  }
-
-  return JSON.stringify(products, null, 2);
-}
-
-function getMinifiedJson() {
-  if (products.length === 1) {
-    return JSON.stringify(products[0]);
-  }
-
-  return JSON.stringify(products);
-}
-
-async function copyJson() {
-  const json = getMinifiedJson();
-
-  try {
-    await navigator.clipboard.writeText(json);
-    showToast("JSON copiado.");
-  } catch (error) {
-    fallbackCopy(json);
-  }
-}
-
-function fallbackCopy(content) {
-  const textarea = document.createElement("textarea");
-
-  textarea.value = content;
-  textarea.style.position = "fixed";
-  textarea.style.opacity = "0";
-
-  document.body.appendChild(textarea);
-
-  textarea.select();
-  document.execCommand("copy");
-
-  textarea.remove();
-
-  showToast("JSON copiado.");
-}
-
-function exportJson() {
-  const json = getMinifiedJson();
-
-  const blob = new Blob(
-    [json],
-    {
-      type: "application/json;charset=utf-8"
-    }
-  );
-
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-
-  link.href = url;
-  link.download = "data-labels.json";
-
-  document.body.appendChild(link);
-
-  link.click();
-  link.remove();
-
-  URL.revokeObjectURL(url);
-
-  showToast("Ficheiro JSON exportado.");
-}
-function isValidEnergyClass(value) {
-  return /^class-energ-[a-g]$/i.test(
-    String(value ?? "").trim()
-  );
-}
-
-function extractIdFromProduct(value) {
-  const match = String(value ?? "")
-    .trim()
-    .match(/^card_equipment_id_(\d+)$/);
-
-  return match ? match[1] : null;
-}
-
-function validateImportedProduct(product) {
-  if (!product || typeof product !== "object") {
-    return {
-      valid: false,
-      message: "Existe um registo inválido."
-    };
-  }
-
-  const id = extractIdFromProduct(product.id_product);
-
-  if (!id) {
-    return {
-      valid: false,
-      message:
-        'O campo "id_product" deve ter o formato ' +
-        '"card_equipment_id_62535".'
-    };
-  }
-
-  if (!isValidEnergyClass(product.class_e)) {
-    return {
-      valid: false,
-      message:
-        'O campo "class_e" deve estar entre ' +
-        '"class-energ-a" e "class-energ-g".'
-    };
-  }
-
-  const expectedPopup =
-    `card_equipment_id_${id}-popup`;
-
-  if (product.img_popup !== expectedPopup) {
-    return {
-      valid: false,
-      message:
-        `O img_popup do produto ${id} deveria ser ` +
-        `"${expectedPopup}".`
-    };
-  }
-
-  return {
-    valid: true,
-    product: createProduct(
-      id,
-      product.class_e
-        .replace("class-energ-", "")
-        .toLowerCase()
-    )
-  };
-}
-function importJsonFile(file) {
-  if (!file) {
-    return;
-  }
-
-  const reader = new FileReader();
-
-  reader.onload = () => {
-    try {
-      const parsedJson = JSON.parse(reader.result);
-
-      const importedProducts = Array.isArray(parsedJson)
-        ? parsedJson
-        : [parsedJson];
-
-      if (importedProducts.length === 0) {
-        throw new Error(
-          "O ficheiro JSON não contém produtos."
-        );
-      }
-
-      const validatedProducts = [];
-
-      importedProducts.forEach((product, index) => {
-        const validation =
-          validateImportedProduct(product);
-
-        if (!validation.valid) {
-          throw new Error(
-            `Produto ${index + 1}: ${validation.message}`
-          );
-        }
-
-        validatedProducts.push(validation.product);
-      });
-
-      const importedIds = validatedProducts.map(
-        (product) => product.id_product
-      );
-
-      const hasRepeatedIds =
-        new Set(importedIds).size !==
-        importedIds.length;
-
-      if (hasRepeatedIds) {
-        throw new Error(
-          "O ficheiro contém IDs repetidos."
-        );
-      }
-
-      const shouldReplace = window.confirm(
-        "Queres substituir os produtos atuais " +
-        "pelos produtos do ficheiro importado?"
-      );
-
-      if (!shouldReplace) {
-        return;
-      }
-
-      products = validatedProducts;
-
-      saveProducts();
-      render();
-
-      showToast(
-        `${products.length} ${
-          products.length === 1
-            ? "produto importado"
-            : "produtos importados"
-        }.`
-      );
-    } catch (error) {
-      window.alert(
-        `Não foi possível importar o JSON.\n\n${error.message}`
-      );
-    } finally {
-      elements.fileInput.value = "";
-    }
-  };
-
-  reader.onerror = () => {
-    window.alert(
-      "Não foi possível ler o ficheiro selecionado."
-    );
-
-    elements.fileInput.value = "";
-  };
-
-  reader.readAsText(file, "UTF-8");
-}
-function clearProducts() {
-  if (products.length === 0) {
-    return;
-  }
-
-  const shouldClear = window.confirm(
-    "Eliminar todos os produtos?"
-  );
-
-  if (!shouldClear) {
-    return;
-  }
-
-  products = [];
-
-  saveProducts();
-  render();
-
-  showToast("Todos os produtos foram eliminados.");
-}
-
-function escapeHtml(value) {
-  const element = document.createElement("div");
-
-  element.textContent = String(value ?? "");
-
-  return element.innerHTML;
-}
+let toastTimeout = null;
 
 function showToast(message) {
-  elements.toast.textContent = message;
-  elements.toast.classList.add("toast-visible");
+  if (!elements.toast) {
+    return;
+  }
 
-  window.clearTimeout(showToast.timeout);
+  elements.toast.textContent =
+    message;
 
-  showToast.timeout = window.setTimeout(() => {
-    elements.toast.classList.remove(
-      "toast-visible"
-    );
-  }, 2200);
+  elements.toast.classList.add(
+    "show"
+  );
+
+  clearTimeout(
+    toastTimeout
+  );
+
+  toastTimeout =
+    setTimeout(() => {
+      elements.toast.classList.remove(
+        "show"
+      );
+    }, 2500);
 }
 
-elements.productForm.addEventListener(
+
+/* =========================================================
+   EVENTOS
+========================================================= */
+
+elements.productForm?.addEventListener(
   "submit",
-  handleSubmit
+  addProduct
 );
 
-elements.productsList.addEventListener(
+
+elements.productsList?.addEventListener(
   "click",
-  (event) => {
-    const button = event.target.closest(
-      "[data-action]"
-    );
-
-    if (!button) {
-      return;
-    }
-
-    const index = Number(button.dataset.index);
-    const action = button.dataset.action;
-
-    if (action === "edit") {
-      editProduct(index);
-    }
-
-    if (action === "delete") {
-      deleteProduct(index);
-    }
-  }
+  handleProductActions
 );
 
-elements.importButton.addEventListener(
+
+/* IMPORTAR */
+
+elements.importButton?.addEventListener(
   "click",
   () => {
     elements.fileInput.click();
   }
 );
 
-elements.fileInput.addEventListener(
+
+elements.fileInput?.addEventListener(
   "change",
   () => {
     const selectedFile =
       elements.fileInput.files[0];
 
-    importJsonFile(selectedFile);
+    importJsonFile(
+      selectedFile
+    );
   }
 );
 
-elements.copyButton.addEventListener(
+
+/* COPIAR */
+
+elements.copyButton?.addEventListener(
   "click",
   copyJson
 );
 
-elements.copyPreviewButton.addEventListener(
+
+elements.copyPreviewButton?.addEventListener(
   "click",
-  copyJson
+  copyPrettyJson
 );
 
-elements.exportButton.addEventListener(
+
+/* EXPORTAR */
+
+elements.exportButton?.addEventListener(
   "click",
   exportJson
 );
 
-elements.clearButton.addEventListener(
+
+/* LIMPAR */
+
+elements.clearButton?.addEventListener(
   "click",
   clearProducts
 );
 
-elements.labelImageInput.addEventListener(
+
+/* IMAGEM */
+
+elements.labelImageInput?.addEventListener(
   "change",
   handleLabelImageSelection
 );
 
-elements.imageProductsSelection.addEventListener(
+
+/* SELEÇÃO DE IDs */
+
+elements.imageProductsSelection?.addEventListener(
   "change",
   handleProductSelection
 );
 
-elements.selectAllProductsButton.addEventListener(
+
+elements.selectAllProductsButton?.addEventListener(
   "click",
   selectAllProducts
 );
 
-elements.clearProductSelectionButton.addEventListener(
+
+elements.clearProductSelectionButton?.addEventListener(
   "click",
   clearProductSelection
 );
 
-elements.generateImagesButton.addEventListener(
+
+/* GERAR ZIP */
+
+elements.generateImagesButton?.addEventListener(
   "click",
   generateImagesZip
 );
+
+
+/* =========================================================
+   INICIAR
+========================================================= */
 
 render();
