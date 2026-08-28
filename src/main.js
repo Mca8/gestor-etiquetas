@@ -729,7 +729,7 @@ function exportJson() {
    * OUTRO NOME PARA O FICHEIRO.
    */
   link.download =
-    "equipamentos.txt";
+    "data-labels.txt";
 
   document.body.appendChild(link);
 
@@ -739,7 +739,7 @@ function exportJson() {
   URL.revokeObjectURL(url);
 
   showToast(
-    "Ficheiro equipamentos.txt exportado."
+    "Ficheiro data-labels.txt exportado."
   );
 }
 
