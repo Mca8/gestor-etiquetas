@@ -111,7 +111,29 @@
       </div>
     </section>
 
-    <section id="productsList" class="products-list"></section>
+    <section class="products-section">
+
+      <!-- PRODUTOS NOVOS -->
+      <div class="products-section-header">
+        <h2>Novos produtos adicionados</h2>
+        <span id="newProductsCount">0 novos</span>
+      </div>
+
+      <div id="newProductsIds" class="new-ids-list"></div>
+
+      <div id="newProductsList" class="products-list"></div>
+
+      <!-- PRODUTOS IMPORTADOS -->
+      <details id="importedProductsCollapse" class="imported-collapse">
+        <summary>
+          <span>Produtos importados</span>
+          <span id="importedProductsCount">0 produtos</span>
+        </summary>
+
+        <div id="productsList" class="products-list"></div>
+      </details>
+
+    </section>
 
     <section id="emptyState" class="empty-state">
       <h2>Ainda não existem produtos</h2>
