@@ -83,6 +83,19 @@ const elements = {
 
 let products = loadProducts();
 
+const NEW_PRODUCTS_KEY = "new-product-ids";
+
+let newProductIds = new Set(
+  JSON.parse(localStorage.getItem(NEW_PRODUCTS_KEY) || "[]")
+);
+
+function saveNewProductIds() {
+  localStorage.setItem(
+    NEW_PRODUCTS_KEY,
+    JSON.stringify([...newProductIds])
+  );
+}
+
 let selectedLabelImage = null;
 let selectedImagePreviewUrl = null;
 
@@ -232,6 +245,7 @@ function render() {
   renderJson();
   renderCount();
   renderImageProductsSelection();
+  renderProductGroups();
 }
 
 
@@ -241,6 +255,9 @@ function render() {
 
 function renderProducts() {
   elements.productsList.innerHTML = "";
+
+  const newProductsList = document.querySelector("#newProductsList");
+  newProductsList.innerHTML = "";
 
   if (products.length === 0) {
     elements.emptyState.hidden = false;
@@ -320,7 +337,11 @@ function renderProducts() {
       </div>
     `;
 
-    elements.productsList.appendChild(card);
+    if (newProductIds.has(product.id_product)) {
+      newProductsList.appendChild(card);
+    } else {
+      elements.productsList.appendChild(card);
+    }
   });
 }
 
@@ -350,7 +371,30 @@ function renderCount() {
     }`;
 }
 
+function renderProductGroups() {
+  const newProducts = products.filter(
+    product => newProductIds.has(product.id_product)
+  );
 
+  const importedProducts = products.filter(
+    product => !newProductIds.has(product.id_product)
+  );
+
+  document.querySelector("#newProductsCount").textContent =
+    `${newProducts.length} novos`;
+
+  document.querySelector("#importedProductsCount").textContent =
+    `${importedProducts.length} produtos`;
+
+  document.querySelector("#newProductsIds").innerHTML =
+    newProducts.length
+      ? newProducts.map(product => `
+          <span class="new-id-badge">
+            ${escapeHtml(getRawId(product))}
+          </span>
+        `).join("")
+      : "<p>Ainda não adicionaste novos IDs.</p>";
+}
 /* =========================================================
    ADICIONAR PRODUTO
 ========================================================= */
@@ -396,27 +440,28 @@ function addProduct(event) {
     return;
   }
 
-  products.push(
-    createProduct(
-      id,
-      energyClass
-    )
-  );
+  const newProduct = createProduct(id, energyClass);
 
-  saveProducts();
-  render();
+  products.push(newProduct);
 
-  elements.productForm.reset();
+  newProductIds.add(newProduct.id_product);
 
-  /*
-   * Classe energética volta sempre para A.
-   */
-  elements.energyClass.value = "a";
+  saveNewProductIds();
 
-  elements.productId.focus();
+    saveProducts();
+    render();
 
-  showToast("Produto adicionado.");
-}
+    elements.productForm.reset();
+
+    /*
+    * Classe energética volta sempre para A.
+    */
+    elements.energyClass.value = "a";
+
+    elements.productId.focus();
+
+    showToast("Produto adicionado.");
+  }
 
 
 /* =========================================================
@@ -514,6 +559,11 @@ function editProduct(id) {
     updatedProduct
   );
 
+  // Atualizar o ID na lista de novos produtos
+  if (newProductIds.delete(oldFullId)) {
+    newProductIds.add(updatedProduct.id_product);
+    saveNewProductIds();
+  }
   /*
    * Se estava selecionado para geração
    * de imagem, atualiza a seleção.
@@ -554,6 +604,9 @@ function deleteProduct(id) {
 
   const fullId =
     `card_equipment_id_${id}`;
+
+  newProductIds.delete(fullId);
+  saveNewProductIds();
 
   products =
     products.filter(
@@ -624,6 +677,10 @@ function clearProducts() {
   products = [];
 
   selectedProductIds.clear();
+
+  // NOVO CÓDIGO
+  newProductIds.clear();
+  saveNewProductIds();
 
   saveProducts();
   render();
@@ -923,6 +980,9 @@ function importJsonFile(file) {
       products =
         validatedProducts;
 
+        newProductIds.clear();
+        saveNewProductIds();
+
       selectedProductIds.clear();
 
       saveProducts();
@@ -978,10 +1038,10 @@ function renderImageProductsSelection() {
 
   removeInvalidProductSelections();
 
-  if (products.length === 0) {
+  if (newProductIds.size === 0) {
     elements.imageProductsSelection.innerHTML = `
       <p class="selection-empty">
-        Ainda não existem produtos.
+        Ainda não adicionaste novos IDs.
       </p>
     `;
 
@@ -990,7 +1050,9 @@ function renderImageProductsSelection() {
     return;
   }
 
-  products.forEach((product) => {
+  products
+  .filter(product => newProductIds.has(product.id_product))
+  .forEach((product) => {
     const id =
       getRawId(product);
 
@@ -1049,13 +1111,11 @@ function renderImageProductsSelection() {
 ========================================================= */
 
 function removeInvalidProductSelections() {
-  const existingIds =
-    new Set(
-      products.map(
-        (product) =>
-          product.id_product
-      )
-    );
+  const existingIds = new Set(
+    products
+      .filter(product => newProductIds.has(product.id_product))
+      .map(product => product.id_product)
+  );
 
   selectedProductIds.forEach(
     (idProduct) => {
@@ -1230,15 +1290,15 @@ function handleProductSelection(
 ========================================================= */
 
 function selectAllProducts() {
-  products.forEach(
-    (product) => {
-      selectedProductIds.add(
-        product.id_product
-      );
-    }
-  );
+
+  products
+    .filter(product => newProductIds.has(product.id_product))
+    .forEach(product => {
+      selectedProductIds.add(product.id_product);
+    });
 
   renderImageProductsSelection();
+
 }
 
 
@@ -1296,13 +1356,11 @@ async function generateImagesZip() {
     return;
   }
 
-  const selectedProducts =
-    products.filter(
-      (product) =>
-        selectedProductIds.has(
-          product.id_product
-        )
-    );
+  const selectedProducts = products.filter(
+    product =>
+      newProductIds.has(product.id_product) &&
+      selectedProductIds.has(product.id_product)
+  );
 
   if (
     selectedProducts.length === 0
@@ -1451,6 +1509,12 @@ elements.productsList?.addEventListener(
   "click",
   handleProductActions
 );
+
+document.querySelector("#newProductsList")
+  ?.addEventListener(
+    "click",
+    handleProductActions
+  );
 
 
 /* IMPORTAR */
