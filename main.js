@@ -256,15 +256,15 @@ function render() {
 function renderProducts() {
   elements.productsList.innerHTML = "";
 
+  const newProductsList = document.querySelector("#newProductsList");
+  newProductsList.innerHTML = "";
+
   if (products.length === 0) {
     elements.emptyState.hidden = false;
     return;
   }
 
   elements.emptyState.hidden = true;
-  const newProductsList = document.querySelector("#newProductsList");
-
-  newProductsList.innerHTML = "";
 
   products.forEach((product, index) => {
     const id = getRawId(product);
@@ -1038,10 +1038,10 @@ function renderImageProductsSelection() {
 
   removeInvalidProductSelections();
 
-  if (products.length === 0) {
+  if (newProductIds.size === 0) {
     elements.imageProductsSelection.innerHTML = `
       <p class="selection-empty">
-        Ainda não existem produtos.
+        Ainda não adicionaste novos IDs.
       </p>
     `;
 
@@ -1050,7 +1050,9 @@ function renderImageProductsSelection() {
     return;
   }
 
-  products.forEach((product) => {
+  products
+  .filter(product => newProductIds.has(product.id_product))
+  .forEach((product) => {
     const id =
       getRawId(product);
 
@@ -1109,13 +1111,11 @@ function renderImageProductsSelection() {
 ========================================================= */
 
 function removeInvalidProductSelections() {
-  const existingIds =
-    new Set(
-      products.map(
-        (product) =>
-          product.id_product
-      )
-    );
+  const existingIds = new Set(
+    products
+      .filter(product => newProductIds.has(product.id_product))
+      .map(product => product.id_product)
+  );
 
   selectedProductIds.forEach(
     (idProduct) => {
@@ -1290,15 +1290,15 @@ function handleProductSelection(
 ========================================================= */
 
 function selectAllProducts() {
-  products.forEach(
-    (product) => {
-      selectedProductIds.add(
-        product.id_product
-      );
-    }
-  );
+
+  products
+    .filter(product => newProductIds.has(product.id_product))
+    .forEach(product => {
+      selectedProductIds.add(product.id_product);
+    });
 
   renderImageProductsSelection();
+
 }
 
 
@@ -1356,13 +1356,11 @@ async function generateImagesZip() {
     return;
   }
 
-  const selectedProducts =
-    products.filter(
-      (product) =>
-        selectedProductIds.has(
-          product.id_product
-        )
-    );
+  const selectedProducts = products.filter(
+    product =>
+      newProductIds.has(product.id_product) &&
+      selectedProductIds.has(product.id_product)
+  );
 
   if (
     selectedProducts.length === 0
